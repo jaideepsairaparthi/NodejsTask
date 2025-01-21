@@ -1,6 +1,8 @@
 let connection=require("./SqlConnection");
 let express = require("express");
 let bcrypt = require("bcrypt");
+let seckey = "abcdefghijklmnopqrstuvwxyz0123456789"
+let jsonwebtoken= require("jsonwebtoken")
 let app = express();
 app.use(express.json());
 app.post("/register",(req,res)=>{
@@ -67,14 +69,16 @@ app.post("/login",(req,res)=>{
                     }else{
                         var usercheck = req.body.user==data[0].user;
                         if(usercheck && result){
+                            let token = jsonwebtoken.sign({id:data[0].id},seckey)
                             res.send({
                                 msg:"successfully logged",
+                                token: token,
                                 statusCode:200
                             });
                         }
                         else{
                             res.send({
-                                msg:"invaalid syntax",
+                                msg:"invalid syntax",
                                 statusCode:200
                             });
                         }
@@ -84,7 +88,7 @@ app.post("/login",(req,res)=>{
         }
        })
 });
+
 app.listen(3000,()=>{
     console.log("hi server started");
-    
 })
